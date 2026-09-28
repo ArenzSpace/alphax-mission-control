@@ -74,18 +74,22 @@ try {
 
 
     const viewer = new Cesium.Viewer(
-        "cesiumContainer",
-        {
-            animation: false,
-            timeline: false,
-            baseLayerPicker: false,
-            geocoder: false,
-            homeButton: false,
-            sceneModePicker: false,
-            navigationHelpButton: false,
-            fullscreenButton: false
-        }
-    );
+    "cesiumContainer",
+    {
+        baseLayer: Cesium.ImageryLayer.fromProviderAsync(
+            Cesium.IonImageryProvider.fromAssetId(3830183)
+        ),
+
+        animation: false,
+        timeline: false,
+        baseLayerPicker: false,
+        geocoder: false,
+        homeButton: false,
+        sceneModePicker: false,
+        navigationHelpButton: false,
+        fullscreenButton: false
+    }
+);
 
 
     /* Make sure globe is visible */
