@@ -1,96 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>AlphaX Globe Test</title>
 
 <script src="https://cesium.com/downloads/cesiumjs/releases/1.145/Build/Cesium/Cesium.js"></script>
 
 <link
-  href="https://cesium.com/downloads/cesiumjs/releases/1.145/Build/Cesium/Widgets/widgets.css"
-  rel="stylesheet"
->
+href="https://cesium.com/downloads/cesiumjs/releases/1.145/Build/Cesium/Widgets/widgets.css"
+rel="stylesheet">
 
 <style>
+
 html, body, #cesiumContainer {
+
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background: black;
+
 }
 
-#status {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    right: 15px;
-    z-index: 999;
-
-    padding: 15px;
-
-    background: rgba(0,0,0,0.9);
-    color: white;
-
-    border: 1px solid #555;
-    border-radius: 10px;
-
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-}
 </style>
+
 </head>
 
 <body>
 
 <div id="cesiumContainer"></div>
 
-<div id="status">
-    ALPHAX SPACE<br>
-    Starting Cesium...
-</div>
-
 <script>
 
-window.addEventListener("error", function(e) {
+Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6InliOFNoWDFPZkhwTkh1VVMiLCJqdGkiOiI2MGExY2Q0Ny00NTNhLTRkZGYtOWVjYy0wZmNmMWUwZjIzZDciLCJpZCI6NTEwNTc2LCJzdWIiOiJBbHBoYVhNaXNzaW9uIiwiaXNzIjoiaHR0cHM6Ly9hcGkuY2VzaXVtLmNvbSIsImF1ZCI6IkFscGhhWCBNaXNzaW9uIENvbnRyb2wiLCJpYXQiOjE3OTA2MTQ2NTh9.Esw1ZN5vmtpR014Diazk4NjobS-JFZM5KhUmuDrUn9c";
 
-    document.getElementById("status").innerText =
-        "ERROR:\n\n" + e.message;
-
-});
-
-
-try {
-
-    /* YOUR CESIUM TOKEN */
-    Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6InliOFNoWDFPZkhwTkh1VVMiLCJqdGkiOiI2MGExY2Q0Ny00NTNhLTRkZGYtOWVjYy0wZmNmMWUwZjIzZDciLCJpZCI6NTEwNTc2LCJzdWIiOiJBbHBoYVhNaXNzaW9uIiwiaXNzIjoiaHR0cHM6Ly9hcGkuY2VzaXVtLmNvbSIsImF1ZCI6IkFscGhhWCBNaXNzaW9uIENvbnRyb2wiLCJpYXQiOjE3OTA2MTQ2NTh9.Esw1ZN5vmtpR014Diazk4NjobS-JFZM5KhUmuDrUn9c";
-
-
-    document.getElementById("status").innerText =
-        "Cesium loaded.\nCreating viewer...";
-
-
-  if (!Cesium.FeatureDetection.supportsWebGL()) {
-
-    document.getElementById("status").innerText =
-        "WEBGL TIDAK DISOKONG / TIDAK AKTIF";
-
-} else {
-
-    document.getElementById("status").innerText =
-        "WEBGL DISOKONG — cuba render...";
-
-  }
-    
-    const viewer = new Cesium.Viewer(
+const viewer = new Cesium.Viewer(
     "cesiumContainer",
     {
-        baseLayer: Cesium.ImageryLayer.fromProviderAsync(
-            Cesium.IonImageryProvider.fromAssetId(3830183)
-        ),
+        baseLayer: false,
 
         animation: false,
         timeline: false,
@@ -103,71 +55,18 @@ try {
     }
 );
 
+viewer.scene.globe.show = true;
 
-    /* Make sure globe is visible */
+viewer.camera.flyTo({
 
-    viewer.scene.globe.show = true;
+    destination:
+        Cesium.Cartesian3.fromDegrees(
+            110,
+            5,
+            15000000
+        )
 
-/* FORCE A VISIBLE TEST OBJECT */
-
-viewer.entities.add({
-    name: "AlphaX Test Object",
-
-    position: Cesium.Cartesian3.fromDegrees(
-        110,
-        5,
-        1000000
-    ),
-
-    ellipsoid: {
-        radii: new Cesium.Cartesian3(
-            300000,
-            300000,
-            300000
-        ),
-
-        material: Cesium.Color.RED
-    }
 });
-
-viewer.camera.setView({
-    destination: Cesium.Cartesian3.fromDegrees(
-        110,
-        5,
-        5000000
-    )
-});
-
-
-    /* Point camera directly at Earth */
-
-    viewer.camera.setView({
-
-        destination:
-            Cesium.Cartesian3.fromDegrees(
-                110,
-                5,
-                20000000
-            )
-
-    });
-
-
-    document.getElementById("status").innerText =
-        "CESIUM OK\n\n" +
-        "Viewer: OK\n" +
-        "Globe: OK\n" +
-        "Camera: OK\n\n" +
-        "Testing Earth rendering...";
-
-
-} catch (error) {
-
-    document.getElementById("status").innerText =
-        "CESIUM FAILED\n\n" +
-        error.toString();
-
-}
 
 </script>
 
