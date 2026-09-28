@@ -73,6 +73,18 @@ try {
         "Cesium loaded.\nCreating viewer...";
 
 
+  if (!Cesium.FeatureDetection.supportsWebGL()) {
+
+    document.getElementById("status").innerText =
+        "WEBGL TIDAK DISOKONG / TIDAK AKTIF";
+
+} else {
+
+    document.getElementById("status").innerText =
+        "WEBGL DISOKONG — cuba render...";
+
+  }
+    
     const viewer = new Cesium.Viewer(
     "cesiumContainer",
     {
