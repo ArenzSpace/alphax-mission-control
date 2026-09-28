@@ -68,7 +68,7 @@ Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZS
 
 const viewer = new Cesium.Viewer("cesiumContainer", {
     baseLayer: Cesium.ImageryLayer.fromProviderAsync(
-        Cesium.IonImageryProvider.fromAssetId(2)
+        Cesium.IonImageryProvider.fromAssetId(3830183)
     ),
     baseLayerPicker: false,
     animation: false,
@@ -80,7 +80,15 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
     fullscreenButton: false
 });
 
-viewer.camera.flyHome(0);
+viewer.scene.globe.show = true;
+
+viewer.camera.setView({
+    destination: Cesium.Cartesian3.fromDegrees(
+        110.0,
+        5.0,
+        20000000
+    )
+});
 </script>
 
 </body>
