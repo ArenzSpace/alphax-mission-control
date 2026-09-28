@@ -2,20 +2,28 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AlphaX Space Mission Control</title>
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no">
+
+<title>AlphaX Space - Globe Diagnostic</title>
 
 <script src="https://cesium.com/downloads/cesiumjs/releases/1.145/Build/Cesium/Cesium.js"></script>
 
 <link
   href="https://cesium.com/downloads/cesiumjs/releases/1.145/Build/Cesium/Widgets/widgets.css"
   rel="stylesheet"
-/>
+>
 
 <style>
-html, body {
+
+html,
+body {
     margin: 0;
+    padding: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -25,32 +33,52 @@ html, body {
 
 #cesiumContainer {
     width: 100%;
-    height: 100vh;
+    height: 100%;
 }
 
-.hud {
+#status {
     position: absolute;
     top: 15px;
     left: 15px;
-    z-index: 10;
-    padding: 12px 16px;
-    background: rgba(5, 10, 18, 0.9);
-    color: white;
+    right: 15px;
+    z-index: 1000;
+
+    padding: 14px;
+
+    background: rgba(5, 10, 18, 0.92);
     border: 1px solid #334155;
-    border-radius: 8px;
+    border-radius: 10px;
+
+    color: white;
+    font-size: 13px;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,0.4);
 }
 
-.hud b {
-    display: block;
-    font-size: 14px;
+#statusTitle {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 8px;
 }
 
-.hud span {
-    display: block;
-    margin-top: 5px;
-    font-size: 11px;
-    color: #9ca3af;
+#statusText {
+    color: #cbd5e1;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
+
+#closeStatus {
+    margin-top: 10px;
+    padding: 7px 12px;
+
+    background: #1e293b;
+    color: white;
+
+    border: 1px solid #475569;
+    border-radius: 6px;
+}
+
 </style>
 </head>
 
@@ -58,37 +86,248 @@ html, body {
 
 <div id="cesiumContainer"></div>
 
-<div class="hud">
-    <b>ALPHAX SPACE MISSION CONTROL</b>
-    <span>ALPHAX-01 · ORBITAL TEST</span>
+<div id="status">
+
+    <div id="statusTitle">
+        ALPHAX SPACE — GLOBE DIAGNOSTIC
+    </div>
+
+    <div id="statusText">
+        Starting Cesium...
+    </div>
+
+    <button id="closeStatus" onclick="hideStatus()">
+        Hide
+    </button>
+
 </div>
 
 <script>
+
+/* =====================================================
+   ALPHAX SPACE
+   CESIUM GLOBE DIAGNOSTIC
+   ===================================================== */
+
+
+/* ---------- STATUS SYSTEM ---------- */
+
+const statusBox = document.getElementById("status");
+const statusText = document.getElementById("statusText");
+
+function showStatus(message) {
+
+    statusBox.style.display = "block";
+
+    statusText.textContent = message;
+
+}
+
+function hideStatus() {
+
+    statusBox.style.display = "none";
+
+}
+
+
+/* ---------- BROWSER ERROR ---------- */
+
+window.addEventListener("error", function(event) {
+
+    showStatus(
+        "JAVASCRIPT ERROR\n\n" +
+        event.message +
+        "\n\n" +
+        "Line: " +
+        event.lineno
+    );
+
+});
+
+
+window.addEventListener("unhandledrejection", function(event) {
+
+    showStatus(
+        "ASYNC ERROR\n\n" +
+        String(event.reason)
+    );
+
+});
+
+
+/* ---------- CESIUM TOKEN ---------- */
+
+/*
+IMPORTANT:
+
+Replace ONLY the text between the quotes below
+with your Cesium ion access token.
+
+Do NOT share your token with anyone.
+*/
+
 Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6InliOFNoWDFPZkhwTkh1VVMiLCJqdGkiOiI2MGExY2Q0Ny00NTNhLTRkZGYtOWVjYy0wZmNmMWUwZjIzZDciLCJpZCI6NTEwNTc2LCJzdWIiOiJBbHBoYVhNaXNzaW9uIiwiaXNzIjoiaHR0cHM6Ly9hcGkuY2VzaXVtLmNvbSIsImF1ZCI6IkFscGhhWCBNaXNzaW9uIENvbnRyb2wiLCJpYXQiOjE3OTA2MTQ2NTh9.Esw1ZN5vmtpR014Diazk4NjobS-JFZM5KhUmuDrUn9c";
 
-const viewer = new Cesium.Viewer("cesiumContainer", {
-    baseLayer: Cesium.ImageryLayer.fromProviderAsync(
-        Cesium.IonImageryProvider.fromAssetId(3830183)
-    ),
-    baseLayerPicker: false,
-    animation: false,
-    timeline: false,
-    geocoder: false,
-    homeButton: false,
-    sceneModePicker: false,
-    navigationHelpButton: false,
-    fullscreenButton: false
-});
 
-viewer.scene.globe.show = true;
+/* ---------- START CESIUM ---------- */
 
-viewer.camera.setView({
-    destination: Cesium.Cartesian3.fromDegrees(
-        110.0,
-        5.0,
-        20000000
-    )
-});
+try {
+
+    showStatus(
+        "STEP 1/4\n" +
+        "CesiumJS loaded.\n" +
+        "Creating globe..."
+    );
+
+
+    /* ---------- CREATE VIEWER ---------- */
+
+    const viewer = new Cesium.Viewer(
+        "cesiumContainer",
+        {
+
+            /*
+             * Cesium's documented global imagery layer.
+             */
+            baseLayer:
+                Cesium.ImageryLayer.fromProviderAsync(
+                    Cesium.IonImageryProvider.fromAssetId(
+                        3830183
+                    )
+                ),
+
+            baseLayerPicker: false,
+
+            animation: false,
+
+            timeline: false,
+
+            geocoder: false,
+
+            homeButton: false,
+
+            sceneModePicker: false,
+
+            navigationHelpButton: false,
+
+            fullscreenButton: false
+
+        }
+    );
+
+
+    showStatus(
+        "STEP 2/4\n" +
+        "Cesium Viewer created.\n\n" +
+        "Checking globe..."
+    );
+
+
+    /* ---------- FORCE GLOBE ---------- */
+
+    viewer.scene.globe.show = true;
+
+    viewer.scene.skyBox.show = true;
+
+    viewer.scene.sun.show = true;
+
+    viewer.scene.moon.show = true;
+
+
+    /* ---------- CAMERA ---------- */
+
+    showStatus(
+        "STEP 3/4\n" +
+        "Moving camera to Earth..."
+    );
+
+
+    viewer.camera.setView({
+
+        destination:
+            Cesium.Cartesian3.fromDegrees(
+                110.0,
+                5.0,
+                20000000
+            )
+
+    });
+
+
+    /* ---------- CAMERA HOME ---------- */
+
+    viewer.homeButton.viewModel.command();
+
+
+    /* ---------- READY ---------- */
+
+    showStatus(
+        "STEP 4/4\n\n" +
+        "CESIUM VIEWER: OK\n" +
+        "GLOBE: OK\n" +
+        "CAMERA: OK\n\n" +
+        "If you can see Earth behind this box,\n" +
+        "the Cesium globe is working.\n\n" +
+        "You can press HIDE."
+    );
+
+
+    /* ---------- IMAGERY ERROR ---------- */
+
+    setTimeout(function() {
+
+        try {
+
+            const layers =
+                viewer.imageryLayers;
+
+            if (
+                !layers ||
+                layers.length === 0
+            ) {
+
+                showStatus(
+                    "IMAGERY PROBLEM\n\n" +
+                    "Cesium loaded, but no imagery layer exists."
+                );
+
+            }
+
+        } catch (error) {
+
+            showStatus(
+                "IMAGERY CHECK ERROR\n\n" +
+                error
+            );
+
+        }
+
+    }, 5000);
+
+
+} catch (error) {
+
+
+    /* ---------- MAIN ERROR ---------- */
+
+    showStatus(
+
+        "CESIUM FAILED TO START\n\n" +
+
+        String(error) +
+
+        "\n\n" +
+
+        "Possible causes:\n" +
+        "• Cesium token problem\n" +
+        "• Imagery access problem\n" +
+        "• Browser/WebGL problem\n" +
+        "• Network request failed"
+
+    );
+
+}
+
 </script>
 
 </body>
